@@ -1,4 +1,2 @@
-// Intentionally empty by default.
-// Add Drizzle tables here when the site actually needs a database.
-// See examples/d1/db/schema.ts for an opt-in example.
-export {};
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+export const leaderboard = sqliteTable("leaderboard", { id: text("id").primaryKey(), leftName: text("left_name").notNull(), rightName: text("right_name").notNull(), score: integer("score").notNull(), leftImageKey: text("left_image_key").notNull(), rightImageKey: text("right_image_key").notNull(), createdAt: integer("created_at").notNull() }, table => [index("idx_leaderboard_rank").on(table.score, table.createdAt)]);
