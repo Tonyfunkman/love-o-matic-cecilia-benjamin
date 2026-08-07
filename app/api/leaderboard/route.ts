@@ -3,7 +3,7 @@ import { deterministicScore } from "../../deterministic-score";
 
 export const dynamic = "force-dynamic";
 type Bindings = { DB: D1Database; PHOTOS: R2Bucket };
-const featured = { id: "benjamin-cecilia", leftName: "Benjamin", rightName: "Cécilia", score: 100, leftImage: "/benjamin.jpg", rightImage: "/cecilia.jpg", featured: true };
+const featured = { id: "benjamin-cecilia", leftName: "Benjamin", rightName: "Cécilia", score: 100, leftImage: "/benjamin.jpg", rightImage: "/cecilia.webp", featured: true };
 async function ensureSchema(db: D1Database) { await db.batch([db.prepare(`CREATE TABLE IF NOT EXISTS leaderboard (id TEXT PRIMARY KEY, left_name TEXT NOT NULL, right_name TEXT NOT NULL, score INTEGER NOT NULL, left_image_key TEXT NOT NULL, right_image_key TEXT NOT NULL, created_at INTEGER NOT NULL)`), db.prepare(`CREATE INDEX IF NOT EXISTS idx_leaderboard_rank ON leaderboard (score DESC, created_at ASC)`)]); }
 
 export async function GET() {
