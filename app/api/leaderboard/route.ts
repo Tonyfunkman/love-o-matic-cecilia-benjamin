@@ -21,10 +21,10 @@ export async function POST(request: Request) {
   const { DB } = env as unknown as Bindings; await ensureSchema(DB); const form = await request.formData();
   const leftName = String(form.get("leftName") ?? "").trim().slice(0, 30); const rightName = String(form.get("rightName") ?? "").trim().slice(0, 30); const score = Number(form.get("score")); const leftImage = form.get("leftImage"); const rightImage = form.get("rightImage");
   if (!leftName || !rightName || !Number.isInteger(score) || score < 0 || score > 100 || !(leftImage instanceof File) || !(rightImage instanceof File)) return Response.json({ error: "Données manquantes" }, { status: 400 });
-  if (leftImage.type !== "image/webp" || rightImage.type !== "image/webp" || leftImage.size > 600_000 || rightImage.size > 600_000) return Response.json({ error: "Images invalides" }, { status: 400 });
+  if (leftImage.type !== "image/jpeg" || rightImage.type !== "image/jpeg" || leftImage.size > 600_000 || rightImage.size > 600_000) return Response.json({ error: "Images invalides" }, { status: 400 });
   const cutoff = await DB.prepare(`SELECT score FROM leaderboard ORDER BY score DESC, created_at ASC LIMIT 1 OFFSET 8`).first<{ score: number }>(); if (cutoff && score <= cutoff.score) return Response.json({ error: "Le classement a changé" }, { status: 409 });
   const id = crypto.randomUUID(); const [leftBytes, rightBytes] = await Promise.all([leftImage.arrayBuffer(), rightImage.arrayBuffer()]);
-  await DB.prepare(`INSERT INTO leaderboard (id, left_name, right_name, score, left_image, right_image, image_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, leftName, rightName, score, leftBytes, rightBytes, "image/webp", Date.now()).run();
+  await DB.prepare(`INSERT INTO leaderboard (id, left_name, right_name, score, left_image, right_image, image_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, leftName, rightName, score, leftBytes, rightBytes, "image/jpeg", Date.now()).run();
   await DB.prepare(`DELETE FROM leaderboard WHERE id IN (SELECT id FROM leaderboard ORDER BY score DESC, created_at ASC LIMIT -1 OFFSET 9)`).run();
   return Response.json({ ok: true, score });
 }
